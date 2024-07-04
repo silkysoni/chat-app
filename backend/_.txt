@@ -1,3 +1,0 @@
-npm init 
-npm i 
-nodemon server/index.js 

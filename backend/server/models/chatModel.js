@@ -1,6 +1,4 @@
 import mongoose from 'mongoose'
-import Message from './MessageModel.js'
-
 const ChatSchema = new mongoose.Schema({
     chatName: {
         type: String,

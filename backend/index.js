@@ -1,14 +1,19 @@
 import express from 'express'
-import chatRoutes from './routes/chatRoute.js'
+import chatRoutes from './server/routes/chatRoute.js'
 import dotenv from 'dotenv'
 import cors from 'cors'
-import connection from './connection/db.js'
-import UserRoute from './routes/UserRoute.js'
-import GroupRoutes from './routes/GroupRoute.js'
-import MessageRoutes from './routes/MessageRoutes.js'
+import connection from './server/connection/db.js'
+import UserRoute from './server/routes/UserRoute.js'
+import GroupRoutes from './server/routes/GroupRoute.js'
+import MessageRoutes from './server/routes/MessageRoutes.js'
 import { Server } from 'socket.io';
+import path from 'path'
+import { fileURLToPath } from 'url'
 
-dotenv.config()
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+dotenv.config({ path: path.resolve(__dirname, './.env') })
+const PORT = process.env.PORT || 3000
 const app = express()
 app.use(cors())
 app.use(express.json())
@@ -19,9 +24,21 @@ app.use('/chat', chatRoutes)
 app.use('/user', UserRoute)
 app.use('/group', GroupRoutes)
 app.use('/message', MessageRoutes)
-app.use('/uploads', express.static('uploads'));
 
-const PORT = process.env.PORT || 3000
+const __dirname1 = path.resolve()
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname1, '/frontend/build')))
+    app.get('*', (req, res) => {
+        res.sendFile(path.resolve(__dirname1, "frontend", "build", "index.html"))
+    })
+}
+else {
+    app.get('/', (req, res) => {
+        res.send("Api is running successfully.")
+    })
+}
+
+
 
 const server = app.listen(PORT, () => {
     console.log(`App listening on port ${PORT}`);
